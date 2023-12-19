@@ -54,7 +54,7 @@ export async function loader({ request }: DataFunctionArgs) {
 		},
 	})
 	if (!verification) {
-		return redirect('/settings/profile/two-factor')
+		return redirect('/profile/two-factor')
 	}
 	const user = await prisma.user.findUniqueOrThrow({
 		where: { id: userId },
@@ -108,7 +108,7 @@ export async function action({ request }: DataFunctionArgs) {
 			await prisma.verification.deleteMany({
 				where: { type: twoFAVerifyVerificationType, target: userId },
 			})
-			return redirect('/settings/profile/two-factor')
+			return redirect('/profile/two-factor')
 		}
 		case 'verify': {
 			await prisma.verification.update({
@@ -117,7 +117,7 @@ export async function action({ request }: DataFunctionArgs) {
 				},
 				data: { type: twoFAVerificationType },
 			})
-			return redirectWithToast('/settings/profile/two-factor', {
+			return redirectWithToast('/profile/two-factor', {
 				type: 'success',
 				title: 'Enabled',
 				description: 'Two-factor authentication has been enabled.',

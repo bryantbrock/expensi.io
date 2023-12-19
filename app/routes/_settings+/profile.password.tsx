@@ -48,7 +48,7 @@ async function requirePassword(userId: string) {
 		where: { userId },
 	})
 	if (!password) {
-		throw redirect('/settings/profile/password/create')
+		throw redirect('/profile/password/create')
 	}
 }
 
@@ -106,7 +106,7 @@ export async function action({ request }: DataFunctionArgs) {
 	})
 
 	return redirectWithToast(
-		`/settings/profile`,
+		`/profile`,
 		{
 			type: 'success',
 			title: 'Password Changed',

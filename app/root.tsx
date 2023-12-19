@@ -295,7 +295,7 @@ function UserDropdown() {
 					>
 						<img
 							className="h-6 w-6 rounded-full object-cover"
-							alt={user.name ?? user.email}
+							alt="User profile"
 							src={getUserImgSrc(user.image?.id)}
 						/>
 						<span className="text-body-sm font-bold">

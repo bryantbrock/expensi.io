@@ -38,10 +38,6 @@ const onboardingEmailSessionKey = 'onboardingEmail'
 const SignupFormSchema = z
 	.object({
 		name: NameSchema,
-		agreeToTermsOfServiceAndPrivacyPolicy: z.boolean({
-			required_error:
-				'You must agree to the terms of service and privacy policy',
-		}),
 		remember: z.boolean().optional(),
 		redirectTo: z.string().optional(),
 	})
@@ -191,18 +187,6 @@ export default function SignupRoute() {
 						errors={fields.confirmPassword.errors}
 					/>
 
-					<CheckboxField
-						labelProps={{
-							htmlFor: fields.agreeToTermsOfServiceAndPrivacyPolicy.id,
-							children:
-								'Do you agree to our Terms of Service and Privacy Policy?',
-						}}
-						buttonProps={conform.input(
-							fields.agreeToTermsOfServiceAndPrivacyPolicy,
-							{ type: 'checkbox' },
-						)}
-						errors={fields.agreeToTermsOfServiceAndPrivacyPolicy.errors}
-					/>
 					<CheckboxField
 						labelProps={{
 							htmlFor: fields.remember.id,

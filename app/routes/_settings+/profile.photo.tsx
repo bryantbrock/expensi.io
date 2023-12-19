@@ -102,7 +102,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 	if (intent === 'delete') {
 		await prisma.userImage.deleteMany({ where: { userId } })
-		return redirect('/settings/profile')
+		return redirect('/profile')
 	}
 
 	await prisma.$transaction(async $prisma => {
@@ -113,7 +113,7 @@ export async function action({ request }: DataFunctionArgs) {
 		})
 	})
 
-	return redirect('/settings/profile')
+	return redirect('/profile')
 }
 
 export default function PhotoRoute() {
