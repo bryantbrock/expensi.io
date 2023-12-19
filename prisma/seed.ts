@@ -85,18 +85,22 @@ async function seed() {
 	}
 	console.timeEnd(`👤 Created ${totalUsers} users...`)
 
-	console.time(`$ Created admin user "admin"`)
+	console.time(`🔒 Created admin users`)
 
 	await prisma.user.create({
 		select: { id: true },
 		data: {
-			email: 'admin@example.com',
-			name: 'Admin',
-			password: { create: createPassword('adminexampledotcom') },
+			email: 'bryant@brock.software',
+			name: 'Bryant',
+			password: {
+				create: createPassword(
+					'd8uNRHcXiFdU7hh9YVKvKL8fxPzgo3Rf62gNCGwT978JuY2hz4',
+				),
+			},
 			roles: { connect: [{ name: 'admin' }, { name: 'user' }] },
 		},
 	})
-	console.timeEnd(`$ Created admin user "admin"`)
+	console.timeEnd(`🔒 Created admin users`)
 
 	console.timeEnd(`🌱 Database has been seeded`)
 }

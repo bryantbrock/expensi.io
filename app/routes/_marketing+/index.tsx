@@ -4,6 +4,6 @@ export const meta: MetaFunction = () => [{ title: 'Expensi.io' }]
 
 export default function Index() {
 	return (
-		<main className="relative min-h-screen sm:flex sm:items-center sm:justify-center"></main>
+		<main className="relative sm:flex sm:items-center sm:justify-center"></main>
 	)
 }
