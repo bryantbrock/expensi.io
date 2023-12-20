@@ -21,18 +21,6 @@ export async function loader({ request }: DataFunctionArgs) {
 					contentType: true,
 				},
 			},
-			expenses: {
-				include: {
-					receipt: {
-						select: {
-							id: true,
-							createdAt: true,
-							updatedAt: true,
-							contentType: true,
-						},
-					},
-				},
-			},
 			password: false, // <-- intentionally omit password
 			sessions: true,
 			roles: true,
@@ -48,17 +36,8 @@ export async function loader({ request }: DataFunctionArgs) {
 				? {
 						...user.image,
 						url: `${domain}/resources/user-images/${user.image.id}`,
-				  }
+					}
 				: null,
-			expenses: user.expenses.map(expense => ({
-				...expense,
-				receipt: expense.receipt
-					? {
-							...expense.receipt,
-							url: `${domain}/resources/receipt/${expense.receipt.id}`,
-					  }
-					: null,
-			})),
 		},
 	})
 }

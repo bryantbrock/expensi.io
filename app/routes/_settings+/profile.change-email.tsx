@@ -8,8 +8,7 @@ import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { Icon } from '#app/components/icon.tsx'
 import {
 	prepareVerification,
 	requireRecentVerification,
@@ -19,7 +18,6 @@ import { requireUserId } from '#app/utils/auth.server.ts'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
-import { useIsPending } from '#app/utils/misc.tsx'
 import { redirectWithToast } from '#app/utils/toast.server.ts'
 import { EmailSchema } from '#app/utils/user-validation.ts'
 import { verifySessionStorage } from '#app/utils/verification.server.ts'
@@ -61,7 +59,7 @@ export async function handleVerification({
 
 	void sendEmail({
 		to: preUpdateUser.email,
-		subject: 'Epic Stack email changed',
+		subject: 'saas-template email changed',
 		react: <EmailChangeNoticeEmail userId={user.id} />,
 	})
 
@@ -133,7 +131,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 	const response = await sendEmail({
 		to: submission.value.email,
-		subject: `Epic Notes Email Change Verification`,
+		subject: `saas-template Email Change Verification`,
 		react: <EmailChangeEmail verifyUrl={verifyUrl.toString()} otp={otp} />,
 	})
 
@@ -162,7 +160,7 @@ export function EmailChangeEmail({
 		<E.Html lang="en" dir="ltr">
 			<E.Container>
 				<h1>
-					<E.Text>Epic Notes Email Change</E.Text>
+					<E.Text>saas-template Email Change</E.Text>
 				</h1>
 				<p>
 					<E.Text>
@@ -183,11 +181,11 @@ export function EmailChangeNoticeEmail({ userId }: { userId: string }) {
 		<E.Html lang="en" dir="ltr">
 			<E.Container>
 				<h1>
-					<E.Text>Your Epic Notes email has been changed</E.Text>
+					<E.Text>Your saas-template email has been changed</E.Text>
 				</h1>
 				<p>
 					<E.Text>
-						We're writing to let you know that your Epic Notes email has been
+						We're writing to let you know that your saas-template email has been
 						changed.
 					</E.Text>
 				</p>
@@ -219,7 +217,6 @@ export default function ChangeEmailIndex() {
 		},
 	})
 
-	const isPending = useIsPending()
 	return (
 		<div>
 			<h1 className="text-h1">Change Email</h1>
@@ -240,11 +237,7 @@ export default function ChangeEmailIndex() {
 					/>
 					<ErrorList id={form.errorId} errors={form.errors} />
 					<div>
-						<StatusButton
-							status={isPending ? 'pending' : actionData?.status ?? 'idle'}
-						>
-							Send Confirmation
-						</StatusButton>
+						<button>Send Confirmation</button>
 					</div>
 				</Form>
 			</div>

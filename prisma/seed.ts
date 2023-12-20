@@ -1,11 +1,5 @@
-import { faker } from '@faker-js/faker'
 import { prisma } from '#app/utils/db.server.ts'
-import {
-	cleanupDb,
-	createPassword,
-	createUser,
-	getExpenseImages,
-} from '#tests/db-utils.ts'
+import { cleanupDb, createPassword, createUser } from '#tests/db-utils.ts'
 
 async function seed() {
 	console.log('🌱 Seeding...')
@@ -16,7 +10,7 @@ async function seed() {
 	console.timeEnd('🧹 Cleaned up the database...')
 
 	console.time('🔑 Created permissions...')
-	const entities = ['user', 'note']
+	const entities = ['user']
 	const actions = ['create', 'read', 'update', 'delete']
 	const accesses = ['own', 'any'] as const
 	for (const entity of entities) {
@@ -55,7 +49,6 @@ async function seed() {
 
 	const totalUsers = 5
 	console.time(`👤 Created ${totalUsers} users...`)
-	const expenseImages = await getExpenseImages()
 
 	for (let index = 0; index < totalUsers; index++) {
 		const userData = createUser()
@@ -66,16 +59,6 @@ async function seed() {
 					...userData,
 					password: { create: createPassword(userData.email) },
 					roles: { connect: { name: 'user' } },
-					expenses: {
-						create: {
-							amount: parseFloat(faker.commerce.price()),
-							description: faker.lorem.sentence(),
-							date: faker.date.past(),
-							receipt: {
-								create: expenseImages[faker.number.int({ min: 0, max: 9 })],
-							},
-						},
-					},
 				},
 			})
 			.catch(e => {
@@ -90,12 +73,10 @@ async function seed() {
 	await prisma.user.create({
 		select: { id: true },
 		data: {
-			email: 'bryant@brock.software',
-			name: 'Bryant',
+			email: 'admin@saas-template.com',
+			name: 'Admin',
 			password: {
-				create: createPassword(
-					'd8uNRHcXiFdU7hh9YVKvKL8fxPzgo3Rf62gNCGwT978JuY2hz4',
-				),
+				create: createPassword('admin@saas-template.com'),
 			},
 			roles: { connect: [{ name: 'admin' }, { name: 'user' }] },
 		},

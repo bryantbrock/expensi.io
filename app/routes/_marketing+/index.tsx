@@ -1,6 +1,6 @@
 import { type MetaFunction } from '@remix-run/node'
 
-export const meta: MetaFunction = () => [{ title: 'Expensi.io' }]
+export const meta: MetaFunction = () => [{ title: 'saas-template' }]
 
 export default function Index() {
 	return (

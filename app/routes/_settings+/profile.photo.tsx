@@ -19,9 +19,8 @@ import { useState } from 'react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList } from '#app/components/forms.tsx'
-import { Button } from '#app/components/ui/button.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { Icon } from '#app/components/icon.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
@@ -187,14 +186,9 @@ export default function PhotoRoute() {
 							}
 						}}
 					/>
-					<Button
-						asChild
-						className="cursor-pointer peer-valid:hidden peer-focus-within:ring-4 peer-focus-visible:ring-4"
-					>
-						<label htmlFor={fields.photoFile.id}>
-							<Icon name="pencil-1">Change</Icon>
-						</label>
-					</Button>
+					<label htmlFor={fields.photoFile.id}>
+						<Icon name="pencil-1">Change</Icon>
+					</label>
 					<StatusButton
 						name="intent"
 						value="submit"
@@ -204,23 +198,18 @@ export default function PhotoRoute() {
 							pendingIntent === 'submit'
 								? 'pending'
 								: lastSubmissionIntent === 'submit'
-								  ? actionData?.status ?? 'idle'
-								  : 'idle'
+									? actionData?.status ?? 'idle'
+									: 'idle'
 						}
 					>
 						Save Photo
 					</StatusButton>
-					<Button
-						type="reset"
-						variant="destructive"
-						className="peer-invalid:hidden"
-					>
+					<button type="reset" className="peer-invalid:hidden">
 						<Icon name="trash">Reset</Icon>
-					</Button>
+					</button>
 					{data.user.image?.id ? (
 						<StatusButton
 							className="peer-valid:hidden"
-							variant="destructive"
 							{...doubleCheckDeleteImage.getButtonProps({
 								type: 'submit',
 								name: 'intent',
@@ -230,8 +219,8 @@ export default function PhotoRoute() {
 								pendingIntent === 'delete'
 									? 'pending'
 									: lastSubmissionIntent === 'delete'
-									  ? actionData?.status ?? 'idle'
-									  : 'idle'
+										? actionData?.status ?? 'idle'
+										: 'idle'
 							}
 						>
 							<Icon name="trash">

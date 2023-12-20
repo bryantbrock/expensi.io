@@ -7,15 +7,8 @@ import {
 	type HeadersFunction,
 } from '@remix-run/node'
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import { useState } from 'react'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '#app/components/ui/tooltip.tsx'
+import { Icon } from '#app/components/icon.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
 import { resolveConnectionData } from '#app/utils/connections.server.ts'
 import {
@@ -165,7 +158,6 @@ function Connection({
 	canDelete: boolean
 }) {
 	const deleteFetcher = useFetcher<typeof action>()
-	const [infoOpen, setInfoOpen] = useState(false)
 	const icon = providerIcons[connection.providerName]
 	return (
 		<div className="flex justify-between gap-2">
@@ -185,39 +177,19 @@ function Connection({
 			{canDelete ? (
 				<deleteFetcher.Form method="POST">
 					<input name="connectionId" value={connection.id} type="hidden" />
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<StatusButton
-									name="intent"
-									value="delete-connection"
-									variant="destructive"
-									size="sm"
-									status={
-										deleteFetcher.state !== 'idle'
-											? 'pending'
-											: deleteFetcher.data?.status ?? 'idle'
-									}
-								>
-									<Icon name="cross-1" />
-								</StatusButton>
-							</TooltipTrigger>
-							<TooltipContent>Disconnect this account</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+					<StatusButton
+						name="intent"
+						value="delete-connection"
+						status={
+							deleteFetcher.state !== 'idle'
+								? 'pending'
+								: deleteFetcher.data?.status ?? 'idle'
+						}
+					>
+						<Icon name="cross-1" />
+					</StatusButton>
 				</deleteFetcher.Form>
-			) : (
-				<TooltipProvider>
-					<Tooltip open={infoOpen} onOpenChange={setInfoOpen}>
-						<TooltipTrigger onClick={() => setInfoOpen(true)}>
-							<Icon name="question-mark-circled"></Icon>
-						</TooltipTrigger>
-						<TooltipContent>
-							You cannot delete your last connection unless you have a password.
-						</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
-			)}
+			) : null}
 		</div>
 	)
 }

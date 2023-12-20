@@ -37,7 +37,7 @@ ADD prisma .
 RUN npx prisma generate
 
 ADD . .
-RUN npm run build
+RUN yarn build
 
 # Finally, build the production image with minimal footprint
 FROM base
@@ -66,7 +66,7 @@ COPY --from=build /myapp/build /myapp/build
 COPY --from=build /myapp/public /myapp/public
 COPY --from=build /myapp/package.json /myapp/package.json
 COPY --from=build /myapp/prisma /myapp/prisma
-COPY --from=build /myapp/app/components/ui/icons /myapp/app/components/ui/icons
+COPY --from=build /myapp/app/components/icons /myapp/app/components/icons
 
 # prepare for litefs
 COPY --from=flyio/litefs:0.5.8 /usr/local/bin/litefs /usr/local/bin/litefs

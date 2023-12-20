@@ -13,7 +13,7 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
@@ -70,7 +70,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 	const response = await sendEmail({
 		to: user.email,
-		subject: `Epic Notes Password Reset`,
+		subject: `saas-template`,
 		react: (
 			<ForgotPasswordEmail onboardingUrl={verifyUrl.toString()} otp={otp} />
 		),
@@ -95,7 +95,7 @@ function ForgotPasswordEmail({
 		<E.Html lang="en" dir="ltr">
 			<E.Container>
 				<h1>
-					<E.Text>Epic Notes Password Reset</E.Text>
+					<E.Text>saas-template Password Reset</E.Text>
 				</h1>
 				<p>
 					<E.Text>
@@ -112,7 +112,7 @@ function ForgotPasswordEmail({
 }
 
 export const meta: MetaFunction = () => {
-	return [{ title: 'Password Recovery for Epic Notes' }]
+	return [{ title: 'Password Recovery for saas-template' }]
 }
 
 export default function ForgotPasswordRoute() {

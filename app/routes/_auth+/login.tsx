@@ -1,6 +1,7 @@
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { invariant } from '@epic-web/invariant'
+import { Heading, Text, Link as RadixLink } from '@radix-ui/themes'
 import {
 	json,
 	redirect,
@@ -15,7 +16,7 @@ import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { CheckboxField, ErrorList, Field } from '#app/components/forms.tsx'
 import { Spacer } from '#app/components/spacer.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { twoFAVerificationType } from '#app/routes/_settings+/profile.two-factor.tsx'
 import {
 	getUserId,
@@ -252,82 +253,73 @@ export default function LoginPage() {
 	})
 
 	return (
-		<div className="flex min-h-full flex-col items-center pb-32 pt-20">
-			<div className="mx-auto w-full max-w-md">
-				<div className="flex flex-col gap-3 text-center">
-					<h1 className="text-h1">Welcome back!</h1>
-					<p className="text-body-md text-muted-foreground">
-						Please enter your details.
-					</p>
-				</div>
-				<Spacer size="xs" />
-				<div>
-					<div className="mx-auto w-full max-w-md px-8">
-						<Form method="POST" {...form.props}>
-							<AuthenticityTokenInput />
-							<HoneypotInputs />
-							<Field
-								labelProps={{ children: 'Email' }}
-								inputProps={{
-									...conform.input(fields.email),
-									autoFocus: true,
-									className: 'lowercase',
-									autoComplete: 'email',
-									type: 'email',
+		<div className="mx-auto w-full max-w-md pt-20">
+			<div className="flex flex-col gap-3 text-center">
+				<Heading size="8">Welcome back!</Heading>
+				<Text>Please enter your details.</Text>
+			</div>
+			<Spacer size="xs" />
+			<div>
+				<div className="mx-auto w-full max-w-md px-8">
+					<Form method="POST" {...form.props}>
+						<AuthenticityTokenInput />
+						<HoneypotInputs />
+						<Field
+							labelProps={{ children: 'Email' }}
+							inputProps={{
+								...conform.input(fields.email),
+								autoFocus: true,
+								className: 'lowercase',
+								autoComplete: 'email',
+								type: 'email',
+							}}
+							errors={fields.email.errors}
+						/>
+
+						<Field
+							labelProps={{ children: 'Password' }}
+							inputProps={{
+								...conform.input(fields.password, {
+									type: 'password',
+								}),
+								autoComplete: 'current-password',
+							}}
+							errors={fields.password.errors}
+						/>
+
+						<div className="flex justify-between">
+							<CheckboxField
+								labelProps={{
+									htmlFor: fields.remember.id,
+									children: 'Remember me',
 								}}
-								errors={fields.email.errors}
+								buttonProps={conform.input(fields.remember, {
+									type: 'checkbox',
+								})}
+								errors={fields.remember.errors}
 							/>
+							<RadixLink asChild>
+								<Link to="/forgot-password">Forgot password?</Link>
+							</RadixLink>
+						</div>
 
-							<Field
-								labelProps={{ children: 'Password' }}
-								inputProps={{
-									...conform.input(fields.password, {
-										type: 'password',
-									}),
-									autoComplete: 'current-password',
-								}}
-								errors={fields.password.errors}
-							/>
+						<input {...conform.input(fields.redirectTo, { type: 'hidden' })} />
+						<ErrorList errors={form.errors} id={form.errorId} />
 
-							<div className="flex justify-between">
-								<CheckboxField
-									labelProps={{
-										htmlFor: fields.remember.id,
-										children: 'Remember me',
-									}}
-									buttonProps={conform.input(fields.remember, {
-										type: 'checkbox',
-									})}
-									errors={fields.remember.errors}
-								/>
-								<div>
-									<Link
-										to="/forgot-password"
-										className="text-body-xs font-semibold"
-									>
-										Forgot password?
-									</Link>
-								</div>
-							</div>
-
-							<input
-								{...conform.input(fields.redirectTo, { type: 'hidden' })}
-							/>
-							<ErrorList errors={form.errors} id={form.errorId} />
-
-							<div className="flex items-center justify-between gap-6 pt-3">
-								<StatusButton
-									className="w-full"
-									status={isPending ? 'pending' : actionData?.status ?? 'idle'}
-									type="submit"
-									disabled={isPending}
-								>
-									Log in
-								</StatusButton>
-							</div>
-						</Form>
-						<div className="flex items-center justify-center gap-2 pt-6">
-							<span className="text-muted-foreground">New here?</span>
+						<div className="flex items-center justify-between gap-6 pt-3">
+							<StatusButton
+								className="w-full"
+								status={isPending ? 'pending' : actionData?.status ?? 'idle'}
+								type="submit"
+								disabled={isPending}
+							>
+								Log in
+							</StatusButton>
+						</div>
+					</Form>
+					<div className="flex items-center justify-center gap-2 pt-6">
+						<span className="text-muted-foreground">New here?</span>
+						<RadixLink asChild>
 							<Link
 								to={
 									redirectTo
@@ -337,7 +329,7 @@ export default function LoginPage() {
 							>
 								Create an account
 							</Link>
-						</div>
+						</RadixLink>
 					</div>
 				</div>
 			</div>
@@ -346,7 +338,7 @@ export default function LoginPage() {
 }
 
 export const meta: MetaFunction = () => {
-	return [{ title: 'Login to Epic Notes' }]
+	return [{ title: 'Login to saas-template' }]
 }
 
 export function ErrorBoundary() {

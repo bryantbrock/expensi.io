@@ -1,4 +1,4 @@
-app = "expensi-io2-0ad4"
+app = "saas-template"
 primary_region = "iad"
 kill_signal = "SIGINT"
 kill_timeout = 5

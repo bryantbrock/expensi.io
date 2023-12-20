@@ -1,9 +1,7 @@
 import { useInputEvent } from '@conform-to/react'
+import { Checkbox, TextField, Text, TextArea } from '@radix-ui/themes'
 import React, { useId, useRef } from 'react'
-import { Checkbox, type CheckboxProps } from './ui/checkbox.tsx'
-import { Input } from './ui/input.tsx'
-import { Label } from './ui/label.tsx'
-import { Textarea } from './ui/textarea.tsx'
+import { cn } from '#app/utils/misc'
 
 export type ListOfErrors = Array<string | null | undefined> | null | undefined
 
@@ -19,9 +17,9 @@ export function ErrorList({
 	return (
 		<ul id={id} className="flex flex-col gap-1">
 			{errorsToRender.map(e => (
-				<li key={e} className="text-[10px] text-foreground-destructive">
-					{e}
-				</li>
+				<Text asChild key={e} color="red">
+					<li className="text-[10px]">{e}</li>
+				</Text>
 			))}
 		</ul>
 	)
@@ -33,8 +31,11 @@ export function Field({
 	errors,
 	className,
 }: {
-	labelProps: React.LabelHTMLAttributes<HTMLLabelElement>
-	inputProps: React.InputHTMLAttributes<HTMLInputElement>
+	labelProps: Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'color'>
+	inputProps: Omit<
+		React.InputHTMLAttributes<HTMLInputElement>,
+		'color' | 'size'
+	>
 	errors?: ListOfErrors
 	className?: string
 }) {
@@ -42,15 +43,17 @@ export function Field({
 	const id = inputProps.id ?? fallbackId
 	const errorId = errors?.length ? `${id}-error` : undefined
 	return (
-		<div className={className}>
-			<Label htmlFor={id} {...labelProps} />
-			<Input
+		<div className={cn('flex flex-col gap-1', className)}>
+			<Text as="label" htmlFor={id} {...labelProps} />
+			<TextField.Input
 				id={id}
 				aria-invalid={errorId ? true : undefined}
 				aria-describedby={errorId}
+				color={errorId ? 'red' : undefined}
+				variant={errorId ? 'soft' : undefined}
 				{...inputProps}
 			/>
-			<div className="min-h-[32px] px-4 pb-3 pt-1">
+			<div className="min-h-5">
 				{errorId ? <ErrorList id={errorId} errors={errors} /> : null}
 			</div>
 		</div>
@@ -63,8 +66,11 @@ export function TextareaField({
 	errors,
 	className,
 }: {
-	labelProps: React.LabelHTMLAttributes<HTMLLabelElement>
-	textareaProps: React.TextareaHTMLAttributes<HTMLTextAreaElement>
+	labelProps: Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'color'>
+	textareaProps: Omit<
+		React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+		'color' | 'size'
+	>
 	errors?: ListOfErrors
 	className?: string
 }) {
@@ -73,14 +79,16 @@ export function TextareaField({
 	const errorId = errors?.length ? `${id}-error` : undefined
 	return (
 		<div className={className}>
-			<Label htmlFor={id} {...labelProps} />
-			<Textarea
+			<Text as="label" htmlFor={id} {...labelProps} />
+			<TextArea
 				id={id}
 				aria-invalid={errorId ? true : undefined}
 				aria-describedby={errorId}
+				color={errorId ? 'red' : undefined}
+				variant={errorId ? 'soft' : undefined}
 				{...textareaProps}
 			/>
-			<div className="min-h-[32px] px-4 pb-3 pt-1">
+			<div className="min-h-5">
 				{errorId ? <ErrorList id={errorId} errors={errors} /> : null}
 			</div>
 		</div>
@@ -94,7 +102,10 @@ export function CheckboxField({
 	className,
 }: {
 	labelProps: JSX.IntrinsicElements['label']
-	buttonProps: CheckboxProps
+	buttonProps: Omit<
+		React.InputHTMLAttributes<HTMLButtonElement>,
+		'color' | 'size' | 'type'
+	> & { onCheckedChange?: (state: boolean | 'indeterminate') => void }
 	errors?: ListOfErrors
 	className?: string
 }) {
@@ -113,7 +124,7 @@ export function CheckboxField({
 	const errorId = errors?.length ? `${id}-error` : undefined
 	return (
 		<div className={className}>
-			<div className="flex gap-2">
+			<div className="flex items-center gap-2">
 				<Checkbox
 					id={id}
 					ref={buttonRef}
@@ -132,15 +143,17 @@ export function CheckboxField({
 						control.blur()
 						buttonProps.onBlur?.(event)
 					}}
+					color={errorId ? 'red' : undefined}
+					variant={errorId ? 'soft' : undefined}
 					type="button"
 				/>
 				<label
 					htmlFor={id}
 					{...labelProps}
-					className="self-center text-body-xs text-muted-foreground"
+					className="text-body-xs text-muted-foreground self-center"
 				/>
 			</div>
-			<div className="px-4 pb-3 pt-1">
+			<div className="min-h-5">
 				{errorId ? <ErrorList id={errorId} errors={errors} /> : null}
 			</div>
 		</div>

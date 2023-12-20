@@ -3,8 +3,9 @@ import { type SEOHandle } from '@nasa-gcn/remix-seo'
 import { json, type DataFunctionArgs } from '@remix-run/node'
 import { Link, Outlet, useMatches } from '@remix-run/react'
 import { z } from 'zod'
+import { GeneralErrorBoundary } from '#app/components/error-boundary'
+import { Icon } from '#app/components/icon'
 import { Spacer } from '#app/components/spacer.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { cn } from '#app/utils/misc.tsx'
@@ -72,4 +73,8 @@ export default function EditUserProfile() {
 			</main>
 		</div>
 	)
+}
+
+export function ErrorBoundary() {
+	return <GeneralErrorBoundary />
 }

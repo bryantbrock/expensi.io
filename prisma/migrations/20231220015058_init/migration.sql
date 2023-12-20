@@ -4,9 +4,7 @@ CREATE TABLE "User" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "email" TEXT NOT NULL,
-    "name" TEXT,
-    "organizationId" TEXT,
-    CONSTRAINT "User_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "name" TEXT
 );
 
 -- CreateTable
@@ -84,38 +82,6 @@ CREATE TABLE "Connection" (
 );
 
 -- CreateTable
-CREATE TABLE "Organization" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    "name" TEXT NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "Expense" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    "date" DATETIME NOT NULL,
-    "amount" REAL NOT NULL,
-    "description" TEXT NOT NULL,
-    "userId" TEXT,
-    CONSTRAINT "Expense_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "Receipt" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    "altText" TEXT,
-    "contentType" TEXT NOT NULL,
-    "blob" BLOB NOT NULL,
-    "expenseId" TEXT,
-    CONSTRAINT "Receipt_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
 CREATE TABLE "_PermissionToRole" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -154,9 +120,6 @@ CREATE UNIQUE INDEX "Verification_target_type_key" ON "Verification"("target", "
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Connection_providerName_providerId_key" ON "Connection"("providerName", "providerId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Receipt_expenseId_key" ON "Receipt"("expenseId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_PermissionToRole_AB_unique" ON "_PermissionToRole"("A", "B");

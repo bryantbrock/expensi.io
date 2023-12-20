@@ -11,19 +11,16 @@ datasource db {
 }
 
 model User {
-  id             String        @id @default(cuid())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  email          String        @unique
-  name           String?
-  image          UserImage?
-  password       Password?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?
-  expenses       Expense[]
-  roles          Role[]
-  sessions       Session[]
-  connections    Connection[]
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  email       String       @unique
+  name        String?
+  image       UserImage?
+  password    Password?
+  roles       Role[]
+  sessions    Session[]
+  connections Connection[]
 }
 
 model UserImage {
@@ -102,35 +99,4 @@ model Connection {
   userId       String
 
   @@unique([providerName, providerId])
-}
-
-model Organization {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  users     User[]
-}
-
-model Expense {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  date        DateTime
-  amount      Float
-  description String
-  receipt     Receipt?
-  User        User?    @relation(fields: [userId], references: [id])
-  userId      String?
-}
-
-model Receipt {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  altText     String?
-  contentType String
-  blob        Bytes
-  expenses    Expense? @relation(fields: [expenseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  expenseId   String?  @unique
 }

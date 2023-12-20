@@ -1,5 +1,6 @@
 import { conform, useForm, type Submission } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
+import { Text } from '@radix-ui/themes'
 import { json, type DataFunctionArgs } from '@remix-run/node'
 import { Form, useActionData, useSearchParams } from '@remix-run/react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
@@ -8,7 +9,7 @@ import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Spacer } from '#app/components/spacer.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { handleVerification as handleChangeEmailVerification } from '#app/routes/_settings+/profile.change-email.tsx'
 import { twoFAVerificationType } from '#app/routes/_settings+/profile.two-factor.tsx'
 import { type twoFAVerifyVerificationType } from '#app/routes/_settings+/profile.two-factor.verify.tsx'
@@ -235,7 +236,7 @@ export default function VerifyRoute() {
 	const checkEmail = (
 		<>
 			<h1 className="text-h1">Check your email</h1>
-			<p className="mt-3 text-body-md text-muted-foreground">
+			<p className="text-body-md text-muted-foreground mt-3">
 				We've sent you a code to verify your email address.
 			</p>
 		</>
@@ -248,7 +249,7 @@ export default function VerifyRoute() {
 		'2fa': (
 			<>
 				<h1 className="text-h1">Check your 2FA app</h1>
-				<p className="mt-3 text-body-md text-muted-foreground">
+				<p className="text-body-md text-muted-foreground mt-3">
 					Please enter your 2FA code to verify your identity.
 				</p>
 			</>
@@ -271,52 +272,50 @@ export default function VerifyRoute() {
 	})
 
 	return (
-		<main className="container flex flex-col justify-center pb-32 pt-20">
-			<div className="text-center">
-				{type ? headings[type] : 'Invalid Verification Type'}
-			</div>
-
-			<Spacer size="xs" />
-
-			<div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
-				<div>
-					<ErrorList errors={form.errors} id={form.errorId} />
-				</div>
-				<div className="flex w-full gap-2">
-					<Form method="POST" {...form.props} className="flex-1">
-						<AuthenticityTokenInput />
-						<HoneypotInputs />
-						<Field
-							labelProps={{
-								htmlFor: fields[codeQueryParam].id,
-								children: 'Code',
-							}}
-							inputProps={{
-								...conform.input(fields[codeQueryParam]),
-								autoComplete: 'one-time-code',
-							}}
-							errors={fields[codeQueryParam].errors}
-						/>
-						<input
-							{...conform.input(fields[typeQueryParam], { type: 'hidden' })}
-						/>
-						<input
-							{...conform.input(fields[targetQueryParam], { type: 'hidden' })}
-						/>
-						<input
-							{...conform.input(fields[redirectToQueryParam], {
-								type: 'hidden',
-							})}
-						/>
-						<StatusButton
-							className="w-full"
-							status={isPending ? 'pending' : actionData?.status ?? 'idle'}
-							type="submit"
-							disabled={isPending}
-						>
-							Submit
-						</StatusButton>
-					</Form>
+		<main className="mx-auto w-full max-w-72 pt-20">
+			<div className="flex flex-col gap-3">
+				<Text>{type ? headings[type] : 'Invalid Verification Type'}</Text>
+				<Spacer size="4xs" />
+				<div className="flex flex-col justify-center gap-1">
+					<div>
+						<ErrorList errors={form.errors} id={form.errorId} />
+					</div>
+					<div className="flex w-full gap-2">
+						<Form method="POST" {...form.props} className="flex-1">
+							<AuthenticityTokenInput />
+							<HoneypotInputs />
+							<Field
+								labelProps={{
+									htmlFor: fields[codeQueryParam].id,
+									children: 'Code',
+								}}
+								inputProps={{
+									...conform.input(fields[codeQueryParam]),
+									autoComplete: 'one-time-code',
+								}}
+								errors={fields[codeQueryParam].errors}
+							/>
+							<input
+								{...conform.input(fields[typeQueryParam], { type: 'hidden' })}
+							/>
+							<input
+								{...conform.input(fields[targetQueryParam], { type: 'hidden' })}
+							/>
+							<input
+								{...conform.input(fields[redirectToQueryParam], {
+									type: 'hidden',
+								})}
+							/>
+							<StatusButton
+								className="w-full"
+								status={isPending ? 'pending' : actionData?.status ?? 'idle'}
+								type="submit"
+								disabled={isPending}
+							>
+								Submit
+							</StatusButton>
+						</Form>
+					</div>
 				</div>
 			</div>
 		</main>

@@ -11,6 +11,7 @@ export default {
 	tailwind: true,
 	postcss: true,
 	watchPaths: ['./tailwind.config.ts'],
+	serverDependenciesToBundle: ['@radix-ui/themes'],
 	routes: async defineRoutes => {
 		return flatRoutes('routes', defineRoutes, {
 			ignoredRouteFiles: [

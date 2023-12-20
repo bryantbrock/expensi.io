@@ -2,8 +2,8 @@ import { type SEOHandle } from '@nasa-gcn/remix-seo'
 import { json, type DataFunctionArgs } from '@remix-run/node'
 import { useFetcher } from '@remix-run/react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { Icon } from '#app/components/icon.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { requireRecentVerification } from '#app/routes/_auth+/verify.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
@@ -49,7 +49,6 @@ export default function TwoFactorDisableRoute() {
 					you would like to do so, click here:
 				</p>
 				<StatusButton
-					variant="destructive"
 					status={disable2FAFetcher.state === 'loading' ? 'pending' : 'idle'}
 					{...dc.getButtonProps({
 						className: 'mx-auto',

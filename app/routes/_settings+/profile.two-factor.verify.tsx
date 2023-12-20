@@ -12,8 +12,8 @@ import * as QRCode from 'qrcode'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { Icon } from '#app/components/icon.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { isCodeValid } from '#app/routes/_auth+/verify.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
@@ -200,8 +200,8 @@ export default function TwoFactorRoute() {
 									pendingIntent === 'verify'
 										? 'pending'
 										: lastSubmissionIntent === 'verify'
-										  ? actionData?.status ?? 'idle'
-										  : 'idle'
+											? actionData?.status ?? 'idle'
+											: 'idle'
 								}
 								type="submit"
 								name="intent"
@@ -211,13 +211,12 @@ export default function TwoFactorRoute() {
 							</StatusButton>
 							<StatusButton
 								className="w-full"
-								variant="secondary"
 								status={
 									pendingIntent === 'cancel'
 										? 'pending'
 										: lastSubmissionIntent === 'cancel'
-										  ? actionData?.status ?? 'idle'
-										  : 'idle'
+											? actionData?.status ?? 'idle'
+											: 'idle'
 								}
 								type="submit"
 								name="intent"

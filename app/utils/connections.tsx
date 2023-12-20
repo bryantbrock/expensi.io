@@ -1,6 +1,6 @@
 import { Form } from '@remix-run/react'
 import { z } from 'zod'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { useIsPending } from './misc.tsx'
 
 // to add another provider, set their name here and add it to the providerNames below

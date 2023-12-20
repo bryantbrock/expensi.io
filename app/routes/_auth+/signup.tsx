@@ -1,5 +1,6 @@
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
+import { Heading } from '@radix-ui/themes'
 import * as E from '@react-email/components'
 import {
 	json,
@@ -13,7 +14,7 @@ import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
@@ -65,7 +66,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 	const response = await sendEmail({
 		to: email,
-		subject: `Welcome to Epic Notes!`,
+		subject: `Welcome to saas-template!`,
 		react: <SignupEmail onboardingUrl={verifyUrl.toString()} otp={otp} />,
 	})
 
@@ -88,7 +89,7 @@ export function SignupEmail({
 		<E.Html lang="en" dir="ltr">
 			<E.Container>
 				<h1>
-					<E.Text>Welcome to Epic Notes!</E.Text>
+					<E.Text>Welcome to saas-template!</E.Text>
 				</h1>
 				<p>
 					<E.Text>
@@ -105,7 +106,7 @@ export function SignupEmail({
 }
 
 export const meta: MetaFunction = () => {
-	return [{ title: 'Sign Up | Epic Notes' }]
+	return [{ title: 'Sign Up | saas-template' }]
 }
 
 export default function SignupRoute() {
@@ -124,10 +125,10 @@ export default function SignupRoute() {
 	})
 
 	return (
-		<div className="container flex flex-col justify-center pb-32 pt-20">
-			<div className="text-center">
-				<h1 className="text-h1">Let's get started!</h1>
-				<p className="mt-3 text-body-md text-muted-foreground">
+		<div className="mx-auto w-full max-w-md pt-20">
+			<div className="flex flex-col gap-3 text-center">
+				<Heading size="8">Let's get started!</Heading>
+				<p className="text-body-md text-muted-foreground mt-3">
 					Please enter your email.
 				</p>
 			</div>

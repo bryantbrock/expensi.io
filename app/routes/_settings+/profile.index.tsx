@@ -7,16 +7,15 @@ import { Link, useFetcher, useLoaderData } from '@remix-run/react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
-import { Button } from '#app/components/ui/button.tsx'
-import { Icon } from '#app/components/ui/icon.tsx'
-import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { Icon } from '#app/components/icon.tsx'
+import { StatusButton } from '#app/components/status-button.tsx'
 import { requireUserId, sessionKey } from '#app/utils/auth.server.ts'
 import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getUserImgSrc, useDoubleCheck } from '#app/utils/misc.tsx'
 import { authSessionStorage } from '#app/utils/session.server.ts'
 import { redirectWithToast } from '#app/utils/toast.server.ts'
-import { EmailSchema, NameSchema } from '#app/utils/user-validation.ts'
+import { NameSchema } from '#app/utils/user-validation.ts'
 import { twoFAVerificationType } from './profile.two-factor.js'
 
 export const handle: SEOHandle = {
@@ -25,7 +24,6 @@ export const handle: SEOHandle = {
 
 const ProfileFormSchema = z.object({
 	name: NameSchema.optional(),
-	email: EmailSchema,
 })
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -82,6 +80,7 @@ export async function action({ request }: DataFunctionArgs) {
 	const formData = await request.formData()
 	await validateCSRF(formData, request.headers)
 	const intent = formData.get('intent')
+
 	switch (intent) {
 		case profileUpdateActionIntent: {
 			return profileUpdateAction({ request, userId, formData })
@@ -110,24 +109,17 @@ export default function EditUserProfile() {
 						alt={data.user.name ?? data.user.email}
 						className="h-full w-full rounded-full object-cover"
 					/>
-					<Button
-						asChild
-						variant="outline"
-						className="absolute -right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full p-0"
+					<Link
+						preventScrollReset
+						to="photo"
+						title="Change profile photo"
+						aria-label="Change profile photo"
 					>
-						<Link
-							preventScrollReset
-							to="photo"
-							title="Change profile photo"
-							aria-label="Change profile photo"
-						>
-							<Icon name="camera" className="h-4 w-4" />
-						</Link>
-					</Button>
+						<Icon name="camera" className="h-4 w-4" />
+					</Link>
 				</div>
 			</div>
 			<UpdateProfile />
-
 			<div className="col-span-6 my-6 h-1 border-b-[1.5px] border-foreground" />
 			<div className="col-span-full flex flex-col gap-6">
 				<div>
@@ -161,7 +153,7 @@ export default function EditUserProfile() {
 				<div>
 					<Link
 						reloadDocument
-						download="my-epic-notes-data.json"
+						download="my-saas-template-data.json"
 						to="/resources/download-user-data"
 					>
 						<Icon name="download">Download your data</Icon>
@@ -177,23 +169,13 @@ export default function EditUserProfile() {
 async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 	const submission = await parse(formData, {
 		async: true,
-		schema: ProfileFormSchema.superRefine(async ({ email }, ctx) => {
-			const existingEmail = await prisma.user.findUnique({
-				where: { email },
-				select: { id: true },
-			})
-			if (existingEmail && existingEmail.id !== userId) {
-				ctx.addIssue({
-					path: ['email'],
-					code: z.ZodIssueCode.custom,
-					message: 'A user already exists with this email',
-				})
-			}
-		}),
+		schema: ProfileFormSchema,
 	})
+
 	if (submission.intent !== 'submit') {
 		return json({ status: 'idle', submission } as const)
 	}
+
 	if (!submission.value) {
 		return json({ status: 'error', submission } as const, { status: 400 })
 	}
@@ -201,12 +183,8 @@ async function profileUpdateAction({ userId, formData }: ProfileActionArgs) {
 	const data = submission.value
 
 	await prisma.user.update({
-		select: { email: true },
 		where: { id: userId },
-		data: {
-			name: data.name,
-			email: data.email,
-		},
+		data: { name: data.name },
 	})
 
 	return json({ status: 'success', submission } as const)
@@ -224,10 +202,7 @@ function UpdateProfile() {
 		onValidate({ formData }) {
 			return parse(formData, { schema: ProfileFormSchema })
 		},
-		defaultValue: {
-			name: data.user.name ?? '',
-			email: data.user.email,
-		},
+		defaultValue: { name: data.user.name ?? '' },
 	})
 
 	return (
@@ -245,19 +220,9 @@ function UpdateProfile() {
 			<ErrorList errors={form.errors} id={form.errorId} />
 
 			<div className="mt-8 flex justify-center">
-				<StatusButton
-					type="submit"
-					size="wide"
-					name="intent"
-					value={profileUpdateActionIntent}
-					status={
-						fetcher.state !== 'idle'
-							? 'pending'
-							: fetcher.data?.status ?? 'idle'
-					}
-				>
+				<button type="submit" name="intent" value={profileUpdateActionIntent}>
 					Save changes
-				</StatusButton>
+				</button>
 			</div>
 		</fetcher.Form>
 	)
@@ -298,7 +263,6 @@ function SignOutOfSessions() {
 							name: 'intent',
 							value: signOutOfSessionsActionIntent,
 						})}
-						variant={dc.doubleCheck ? 'destructive' : 'default'}
 						status={
 							fetcher.state !== 'idle'
 								? 'pending'
@@ -342,7 +306,6 @@ function DeleteData() {
 						name: 'intent',
 						value: deleteDataActionIntent,
 					})}
-					variant={dc.doubleCheck ? 'destructive' : 'default'}
 					status={fetcher.state !== 'idle' ? 'pending' : 'idle'}
 				>
 					<Icon name="trash">

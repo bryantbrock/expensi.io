@@ -1,5 +1,11 @@
 import { useForm } from '@conform-to/react'
 import { parse } from '@conform-to/zod'
+import {
+	Theme as RadixTheme,
+	Button,
+	IconButton,
+	// ThemePanel as RadixThemePanel,
+} from '@radix-ui/themes'
 import { cssBundleHref } from '@remix-run/css-bundle'
 import {
 	json,
@@ -20,25 +26,15 @@ import {
 	useFetcher,
 	useFetchers,
 	useLoaderData,
-	useSubmit,
 } from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
-import { useRef } from 'react'
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { ErrorList } from './components/forms.tsx'
-import { EpicToaster } from './components/toaster.tsx'
-import { Button } from './components/ui/button.tsx'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuPortal,
-	DropdownMenuTrigger,
-} from './components/ui/dropdown-menu.tsx'
-import { Icon, href as iconsHref } from './components/ui/icon.tsx'
+import { Icon, href as iconsHref } from './components/icon.tsx'
+import { Toaster } from './components/toaster.tsx'
 import fontStyleSheetUrl from './styles/font.css'
 import tailwindStyleSheetUrl from './styles/tailwind.css'
 import { getUserId, logout } from './utils/auth.server.ts'
@@ -47,13 +43,15 @@ import { csrf } from './utils/csrf.server.ts'
 import { prisma } from './utils/db.server.ts'
 import { getEnv } from './utils/env.server.ts'
 import { honeypot } from './utils/honeypot.server.ts'
-import { combineHeaders, getDomainUrl, getUserImgSrc } from './utils/misc.tsx'
+import { combineHeaders, getDomainUrl } from './utils/misc.tsx'
 import { useNonce } from './utils/nonce-provider.ts'
 import { useRequestInfo } from './utils/request-info.ts'
 import { type Theme, setTheme, getTheme } from './utils/theme.server.ts'
 import { makeTimings, time } from './utils/timing.server.ts'
 import { getToast } from './utils/toast.server.ts'
-import { useOptionalUser, useUser } from './utils/user.ts'
+import { useOptionalUser } from './utils/user.ts'
+import '@radix-ui/themes/styles.css'
+import './styles/theme.css'
 
 export const links: LinksFunction = () => {
 	return [
@@ -85,7 +83,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	return [
-		{ title: data ? 'Epic Notes' : 'Error | Epic Notes' },
+		{ title: data ? 'Remix App' : 'Error | Remix App' },
 		{ name: 'description', content: `Your own captain's log` },
 	]
 }
@@ -119,7 +117,7 @@ export async function loader({ request }: DataFunctionArgs) {
 						where: { id: userId },
 					}),
 				{ timings, type: 'find user', desc: 'find user in root' },
-		  )
+			)
 		: null
 	if (userId && !user) {
 		console.info('something weird happened')
@@ -158,9 +156,7 @@ export async function loader({ request }: DataFunctionArgs) {
 }
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
-	const headers = {
-		'Server-Timing': loaderHeaders.get('Server-Timing') ?? '',
-	}
+	const headers = { 'Server-Timing': loaderHeaders.get('Server-Timing') ?? '' }
 	return headers
 }
 
@@ -170,20 +166,22 @@ const ThemeFormSchema = z.object({
 
 export async function action({ request }: DataFunctionArgs) {
 	const formData = await request.formData()
-	const submission = parse(formData, {
-		schema: ThemeFormSchema,
-	})
+	const submission = parse(formData, { schema: ThemeFormSchema })
+
 	if (submission.intent !== 'submit') {
 		return json({ status: 'idle', submission } as const)
 	}
+
 	if (!submission.value) {
 		return json({ status: 'error', submission } as const, { status: 400 })
 	}
+
 	const { theme } = submission.value
 
 	const responseInit = {
 		headers: { 'set-cookie': setTheme(theme) },
 	}
+
 	return json({ success: true, submission }, responseInit)
 }
 
@@ -199,7 +197,7 @@ function Document({
 	env?: Record<string, string>
 }) {
 	return (
-		<html lang="en" className={`${theme} h-full overflow-x-hidden`}>
+		<html lang="en" className="h-full overflow-x-hidden">
 			<head>
 				<ClientHintCheck nonce={nonce} />
 				<Meta />
@@ -207,8 +205,11 @@ function Document({
 				<meta name="viewport" content="width=device-width,initial-scale=1" />
 				<Links />
 			</head>
-			<body className="bg-background text-foreground">
-				{children}
+			<body>
+				<RadixTheme appearance={theme}>
+					{children}
+					{/* <RadixThemePanel /> */}
+				</RadixTheme>
 				<script
 					nonce={nonce}
 					dangerouslySetInnerHTML={{
@@ -232,26 +233,27 @@ function App() {
 	return (
 		<Document nonce={nonce} theme={theme} env={data.ENV}>
 			<div className="flex h-screen min-h-screen flex-col justify-between">
-				<header className="container py-6">
-					<nav>
-						<div className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap md:gap-8">
+				<header>
+					<nav className="mx-auto max-w-screen-2xl p-3 md:p-6">
+						<div className="flex w-full items-center justify-between gap-2">
 							<Link to="/">
-								<div className="font-light">epic</div>
-								<div className="font-bold">notes</div>
+								<div className="font-light">saas-template</div>
 							</Link>
-							<div className="flex items-center gap-10">
-								<div className="flex items-center gap-2">
-									<ThemeSwitch
-										userPreference={data.requestInfo.userPrefs.theme}
-									/>
-									{user ? (
-										<UserDropdown />
-									) : (
-										<Button asChild variant="default" size="sm">
-											<Link to="/login">Log In</Link>
+							<div className="flex items-center gap-2">
+								<ThemeSwitch
+									userPreference={data.requestInfo.userPrefs.theme}
+								/>
+								{user ? (
+									<Form action="/logout" method="POST">
+										<Button variant="outline" size="2" type="submit">
+											Logout
 										</Button>
-									)}
-								</div>
+									</Form>
+								) : (
+									<Button asChild variant="outline" size="2">
+										<Link to="/login">Log In</Link>
+									</Button>
+								)}
 							</div>
 						</div>
 					</nav>
@@ -261,7 +263,7 @@ function App() {
 					<Outlet />
 				</div>
 			</div>
-			<EpicToaster toast={data.toast} />
+			<Toaster toast={data.toast} />
 		</Document>
 	)
 }
@@ -278,67 +280,6 @@ function AppWithProviders() {
 }
 
 export default withSentry(AppWithProviders)
-
-function UserDropdown() {
-	const user = useUser()
-	const submit = useSubmit()
-	const formRef = useRef<HTMLFormElement>(null)
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button asChild variant="outline">
-					<Link
-						to="/profile"
-						// this is for progressive enhancement
-						onClick={e => e.preventDefault()}
-						className="flex items-center gap-2"
-					>
-						<img
-							className="h-6 w-6 rounded-full object-cover"
-							alt="User profile"
-							src={getUserImgSrc(user.image?.id)}
-						/>
-						<span className="text-body-sm font-bold">
-							{user.name ?? user.email}
-						</span>
-					</Link>
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuPortal>
-				<DropdownMenuContent sideOffset={8} align="start">
-					<DropdownMenuItem asChild>
-						<Link prefetch="intent" to="/profile">
-							<Icon className="text-body-md" name="avatar">
-								Profile
-							</Icon>
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link prefetch="intent" to="/dashboard">
-							<Icon className="text-body-md" name="home">
-								Dashboard
-							</Icon>
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem
-						asChild
-						// this prevents the menu from closing before the form submission is completed
-						onSelect={event => {
-							event.preventDefault()
-							submit(formRef.current)
-						}}
-					>
-						<Form action="/logout" method="POST" ref={formRef}>
-							<Icon className="text-body-md" name="exit">
-								<button type="submit">Logout</button>
-							</Icon>
-						</Form>
-					</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenuPortal>
-		</DropdownMenu>
-	)
-}
 
 /**
  * @returns the user's theme preference, or the client hint theme if the user
@@ -404,9 +345,9 @@ function ThemeSwitch({ userPreference }: { userPreference?: Theme | null }) {
 		<fetcher.Form method="POST" {...form.props}>
 			<input type="hidden" name="theme" value={nextMode} />
 			<div className="flex gap-2">
-				<Button type="submit" variant="outline" size="sm">
+				<IconButton type="submit" variant="outline">
 					{modeLabel[mode]}
-				</Button>
+				</IconButton>
 			</div>
 			<ErrorList errors={form.errors} id={form.errorId} />
 		</fetcher.Form>
